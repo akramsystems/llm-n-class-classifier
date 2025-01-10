@@ -1,0 +1,12 @@
+.env
+/venv
+results.txt
+
+# Ignore everything in the datasets folder
+datasets/*
+
+# But do not ignore the NSL-KDD_schema.json file
+!datasets/NSL-KDD_schema.json
+
+# ignore all cache files
+__pycache__/
