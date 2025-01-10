@@ -124,6 +124,14 @@ $ docker exec -it 308152ef22c2 python -m scripts.download_datasets
 $ docker exec -it 308152ef22c2 python -m tests.test_classification
 ```
 
+PS: you can select a specific dataset by uncommenting the dataset you want to test in the `tests/test_classification.py`.
+
+```python
+    # test_iris_classification_error()
+    # test_nslkdd_classification_error()
+    test_imdb_classification_error()
+```
+
 ## Additional Notes
 
 - Problem Formulation:
@@ -133,17 +141,20 @@ $ docker exec -it 308152ef22c2 python -m tests.test_classification
 - **Model Choice**: 
 
     - We could have used a SLM which does dynamic classification, that is trained.  This could be useful if we wanted to save money on the LLM calls. but the caveat would not be able to add context to our input which is needed to understand the variables if some of the variables are not text based and numbers. 
+    
     - An example of this would be available here on hugging face i.e. [Facebooks BART-Large-MNLI](https://huggingface.co/facebook/bart-large-mnli)
+    
+    - the input schema and definition of the features we are passing in might be useful to the model to make a better prediction, 
 
 - **Dataset**: 
     - We could have used a larger sample size for our testing but i did this to keep it simple and shuffled the data and randomly sampled 100 rows. Now if our possible custom labels are a large number we would need to sample more data relative to the number of labels we have.
 
 - **Testing**: 
     - I didn't include tests with the few shot examples because I wanted to get this PR in, now wew could have sampled some of the data from the dataset and used them as few shot examples if we had an example dataset, specifically sampling atleast M examples for each label.
-    - We use simply accuracy where as we could have used other metrics like F1 score, precision, recall, etc. and output a confusion matrix to accompany the tests.
-    - We are likely to hit rate limits on the LLM calls so we would need to implement a rate limiting mechanism.
+    
+    - We easily hit rate limits on the LLM calls so we would need to implement a rate limiting mechanism.
+
     - Didn't create unit tests but that is a good idea.
-    - We can encorporate an MLOPs tool like [ClearML](https://clear.ml/) to track the experiments and the results on CI/CD, this way we can have a history of the experiments and the results.
 
 - **Future Optimization**: 
     
@@ -152,4 +163,15 @@ $ docker exec -it 308152ef22c2 python -m tests.test_classification
     - _Better Feature Engineering_: We could do a type of feature optimization where we find the most important features for the classification task using a method like PCA this way we can ensure the number of features we us to handle the classification task is minimized.
 
     - _Better Model or Multi Model Approach_: We can compare and contrast this approach to that of using embeddings and a transformer model like BERT or GPT-3.5-turbo. Or try to take a look at ReRanker Models. To see if that is a better way to fit the problem criteria.  Multiple Models could also be used and we can use a voting mechanism to determine the final output.
+
+    - _Better Accuracy Metrics_: We use simply accuracy where as we could have used other metrics like F1 score, precision, recall, etc. and output a confusion matrix to accompany the tests.
+
+    - _Better Prompt Alignment_: We could use better prompt engineering techniques of ensuring the definitions of our inputs are alongside their values, and improve formatting using methods like pformat to make the output more human readable and hence more llm friendly.
+
+    - _MLOPs_: We can encorporate an MLOPs tool like [ClearML](https://clear.ml/) to track the experiments and the results on CI/CD, this way we can have a history of the experiments and the results. This allows for an easy Leaderboard to be created to compare the results of the different models and approaches, and perform hyperparameter tuning, to find the optimal system configuration
+
+    - _Rate Limiting_: We hit rate limits on the LLM calls so we would need to implement a rate limiting mechanism.
+
+    - _Unit Tests_: We could have added unit tests to the project to ensure the code is working as expected.
+
 

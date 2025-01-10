@@ -13,10 +13,9 @@ def load_input_schema_definition(file_path) -> str:
         data = json.load(file)
     return str(data)
 
-def write_results_to_file(dataset_name, accuracy, error):
+def write_results_to_file(dataset_name, accuracy):
     with open('results.txt', 'a') as file:
         file.write(f"\n----------------------------------\n")
         file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         file.write(f"Dataset: {dataset_name}\n")
         file.write(f"Accuracy: {accuracy:.2f}\n")
-        file.write(f"Error: {error:.2f}\n\n")

@@ -1,6 +1,5 @@
 .env
 /venv
-results.txt
 
 # Ignore everything in the datasets folder
 datasets/*

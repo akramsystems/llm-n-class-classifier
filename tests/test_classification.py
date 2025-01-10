@@ -14,12 +14,12 @@ def test_iris_classification_error():
     
     df = load_dataset(dataset_name).sample(n=SAMPLE_SIZE)
     
-    total_examples = len(df)
     incorrect_predictions = 0
 
     # Load custom labels from JSON
     custom_labels = load_custom_labels_from_json('datasets/iris_labels.json')
 
+    examples_processed = 0
     for index, row in df.iterrows():
         input_data = str(row.drop('label').to_dict())
         true_label = row['label']
@@ -38,22 +38,25 @@ def test_iris_classification_error():
                 continue
             else:
                 raise e
-
+        examples_processed += 1
         # Check if the prediction matches the true label
         if y_hat.lower() != true_label.lower():
             incorrect_predictions += 1
 
-        accuracy = (index+1 - incorrect_predictions) / (index+1)
+        # log the percentage of correct predictions
+        logger.info(f"Percentage of correct predictions: {(examples_processed - incorrect_predictions) / examples_processed}")
+
+        accuracy = (examples_processed - incorrect_predictions) / examples_processed
         
         # log the percentage of correct predictions
         logger.info(f"Percentage of correct predictions: {accuracy}")
 
     # Calculate error
-    error = 1 - accuracy
+    error = 1.0 - accuracy
     logger.info(f"Classification Error for {dataset_name}: {error}")
 
     # Write results to file
-    write_results_to_file(dataset_name, accuracy, error)
+    write_results_to_file(dataset_name, accuracy)
 
     # Assert that error is minimized (for example, less than a threshold)
     assert error < 0.1  # Example threshold 
@@ -70,6 +73,7 @@ def test_imdb_classification_error():
     # Load custom labels from JSON
     custom_labels = load_custom_labels_from_json('datasets/imdb_labels.json')
 
+    examples_processed = 0
     for index, row in df.iterrows():
         input_data = str(row.drop('label').to_dict())
         true_label = row['label']
@@ -88,19 +92,19 @@ def test_imdb_classification_error():
                 continue
             else:
                 raise e
-
+        examples_processed += 1
         # Check if the prediction matches the true label
         if y_hat != true_label:
             incorrect_predictions += 1
         
-        accuracy = (index + 1 - incorrect_predictions) / (index + 1)
+    accuracy = (examples_processed - incorrect_predictions) / examples_processed
 
     # Calculate error
-    error = incorrect_predictions / total_examples
+    error = 1.0 - accuracy
     logger.info(f"Classification Error for {dataset_name}: {error}")
 
     # Write results to file
-    write_results_to_file(dataset_name, accuracy, error)
+    write_results_to_file(dataset_name, accuracy)
 
     # Assert that error is minimized (for example, less than a threshold
     assert error < 0.1, f"Classification Error for {dataset_name} is too high: {error}"
@@ -117,6 +121,7 @@ def test_nslkdd_classification_error():
     # Load custom labels from JSON
     custom_labels = load_custom_labels_from_json('datasets/NSL-KDD_labels.json')
 
+    examples_processed = 0
     for index, row in df.iterrows():
         input_data = str(row.drop('label').to_dict())
         true_label = row['label']
@@ -137,25 +142,23 @@ def test_nslkdd_classification_error():
                 continue
             else:
                 raise e
-
+        examples_processed += 1
         # Check if the prediction matches the true label
         if y_hat != true_label:
             incorrect_predictions += 1
         
-        # log the percentage of correct predictions
-        logger.info(f"Percentage of correct predictions: {(index+1 - incorrect_predictions) / (index+1)}")
-
+    accuracy = (examples_processed - incorrect_predictions) / examples_processed
+    error = 1.0 - accuracy
     # Calculate error
-    error = incorrect_predictions / total_examples
     logger.info(f"Classification Error for {dataset_name}: {error}")
 
     # Write results to file
-    write_results_to_file(dataset_name, 1 - error, error)
+    write_results_to_file(dataset_name, accuracy)
 
     # Assert that error is minimized (for example, less than a threshold)
     assert error < 0.5, f"Classification Error for {dataset_name} is too high: {error}"
 
 if __name__ == "__main__":
-    test_iris_classification_error()
+    # test_iris_classification_error()
     # test_nslkdd_classification_error()
-    # test_imdb_classification_error()
+    test_imdb_classification_error()
