@@ -11,21 +11,33 @@ def classify_input(
     input_schema_definition: Optional[str] = None
 ) -> str:
     """
-    Domain logic to classify an input using our LLM pipeline.
+    Classify an input using the LLM pipeline.
+
+    Args:
+        dataset_name (str): Name of the dataset.
+        input_data (str): Raw input data to classify.
+        custom_labels (List[CustomLabel]): List of custom labels.
+        few_shot_examples (Optional[List[Dict]]): Few-shot examples for the model.
+        input_schema_definition (Optional[str]): Schema definition for the input.
+
+    Returns:
+        str: Predicted label name.
     """
-    # Build system prompt, including few-shot examples if provided
-    # note this can be cached in the future since this will act as a constant
-    # for a given dataset (or we could optimize the system prompt for each dataset this will create faster results)
-    user_prompt = llm_classifier.build_user_prompt(dataset_name, custom_labels, few_shot_examples, input_schema_definition)
+    # Build the user prompt
+    user_prompt = llm_classifier.build_user_prompt(
+        dataset_name, custom_labels, few_shot_examples, input_schema_definition
+    )
     
-    # Pass the prompt + data to the LLM (dynamic rpomp)
+    # Get classification response from the LLM
     classification_response = llm_classifier.call_llm_for_classification(user_prompt, input_data)
 
-    # Find and return the labeled class (note there is a better way to do this in the future)
+    # Log the classification response
     logger.info(f"Classification response: {classification_response}")
+
+    # Find and return the predicted label
     for prediction in classification_response:
         if prediction.value:
             return prediction.label_name
 
     logger.warning("No class was predicted to be correct")
-    return 'None'  # Return None if no label is found 
+    return 'None'  # Return 'None' if no label is found 
