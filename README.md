@@ -141,7 +141,15 @@ $ docker exec -it 308152ef22c2 python -m tests.test_classification
 - **Testing**: 
     - I didn't include tests with the few shot examples because I wanted to get this PR in, now wew could have sampled some of the data from the dataset and used them as few shot examples if we had an example dataset, specifically sampling atleast M examples for each label.
     - We use simply accuracy where as we could have used other metrics like F1 score, precision, recall, etc. and output a confusion matrix to accompany the tests.
+    - We are likely to hit rate limits on the LLM calls so we would need to implement a rate limiting mechanism.
+    - Didn't create unit tests but that is a good idea.
+    - We can encorporate an MLOPs tool like [ClearML](https://clear.ml/) to track the experiments and the results on CI/CD, this way we can have a history of the experiments and the results.
 
 - **Future Optimization**: 
-    - We aren't dynamically generating the Basemodel Resposne for each dataset we could choose to dynamically generate a BaseModel based on the `custom_labels` which are passed in this way we can have a stronger type check enforced by the llms `.parse()` method as it is possible for it to NOT return an expected output. 
-    - We could do a type of feature optimization where we find the most important features for the classification task using a method like PCA this way we can ensure the number of features we us to handle the classification task is minimized.
+    
+    - _Better Schema_: We aren't dynamically generating the Basemodel Resposne for each dataset we could choose to dynamically generate a BaseModel based on the `custom_labels` which are passed in this way we can have a stronger type check enforced by the llms `.parse()` method as it is possible for it to NOT return an expected output. 
+    
+    - _Better Feature Engineering_: We could do a type of feature optimization where we find the most important features for the classification task using a method like PCA this way we can ensure the number of features we us to handle the classification task is minimized.
+
+    - _Better Model or Multi Model Approach_: We can compare and contrast this approach to that of using embeddings and a transformer model like BERT or GPT-3.5-turbo. Or try to take a look at ReRanker Models. To see if that is a better way to fit the problem criteria.  Multiple Models could also be used and we can use a voting mechanism to determine the final output.
+
