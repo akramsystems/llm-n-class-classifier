@@ -4,26 +4,30 @@
 
 This project is a FastAPI application designed to perform classification tasks using a language model (LLM). It supports custom labels, few-shot examples, and testing with multiple datasets.
 
-## Project Structure
+## Mathematical Problem Formulation
+    
+### Given:
 
-- **src/**: Main source directory containing the application code.
-  - **main.py**: Contains the FastAPI application and the endpoint definitions.
-  - **schemas.py**: Pydantic models for request/response validation.
-  - **config.py**: Holds configuration details (e.g., environment variables, LLM API keys).
-  - **classifier/**: Contains the logic for classification tasks.
-    - **llm.py**: Logic for interacting with the LLM.
-    - **service.py**: Domain logic for classification tasks.
-  - **utils.py**: Utility functions for loading datasets and other helper functions.
-- **tests/**: Contains test cases for the application.
-  - **test_classification.py**: Tests for classification logic.
-  - **utils.py**: Utility functions for testing, such as loading custom labels.
-- **datasets/**: Directory containing dataset files and label descriptions.
-- **scripts/**: Contains scripts for tasks like downloading datasets.
-  - **download_datasets.py**: Script to download datasets and save them as CSV.
-- **Dockerfile**: Docker configuration for building the application image.
-- **docker-compose.yaml**: Docker Compose configuration for running the application.
-- **requirements.txt**: Python dependencies for the project.
-- **.gitignore**: Specifies files and directories to be ignored by Git.
+Set of inputs `X={x1,x2,…,xn}:`
+The input data points that need classification.
+
+Set of user-defined labels `L={l1,l2,…,lk}:`
+Custom labels provided by end-users, along with their descriptions
+`D={d1,d2,…,dk}.`
+
+Classification tasks:
+    Binary classification `(L={0,1})`
+    Multi-class classification `(|L|>2)`
+
+Few-shot examples `F={(xf,lf)}f=1m`:
+A small set of labeled examples provided for the system to learn from,
+where `xf∈X` and `lf∈L`.
+
+### Objective:
+
+Design a system S such that:
+
+`S: X → L`, where `S(x)` predicts a label `l` in `L` for each input `x` in `X`.
 
 ## Usage
 
@@ -38,12 +42,6 @@ To classify input data, send a POST request to the `/classify` endpoint with the
     - `custom_labels` (List[CustomLabel]): List of custom labels of possible output values and their descriptions.
     - `few_shot_examples` (Optional[List[Dict]]): Optional few-shot examples to be appended to the system prompt.
     - `input_schema_definition` (Optional[str]): Optional input schema definition to be appended to the system prompt.
-
-## Testing with Datasets
-
-- **Iris**: Tabular data with custom labels like "setosa", "versicolor", "virginica".
-- **IMDB**: Text data with sentiment labels ["positive", "negative"].
-- **NSL-KDD**: Cyber-security dataset with labels ["anomaly", "normal"].
 
 ## Getting Started
 
@@ -97,6 +95,14 @@ To execute a Python function within the Docker container, follow these steps:
 
 ## Running Tests and Scripts with Docker Compose
 
+The following datasets were used for testing:
+
+- **Iris**: Tabular data with custom labels like "setosa", "versicolor", "virginica" for multi-class classification.
+
+- **IMDB**: Text data with sentiment labels for binary classification ["positive", "negative"].
+
+- **NSL-KDD**: Cyber-security dataset with labels ["anomaly", "normal"] for binary classification.
+
 ### Make sure image is running and get container id
 
 ```bash
@@ -120,8 +126,22 @@ $ docker exec -it 308152ef22c2 python -m tests.test_classification
 
 ## Additional Notes
 
-- **Model Choice**: We could have used a SLM which does dynamic classification, that is trained.  This could be useful if we wanted to save money on the LLM calls. but the caveat would not be able to add context to our input which is needed to understand the variables if some of the variables are not text based and numbers. An example of this would be available here on hugging face i.e. [Facebooks BART-Large-MNLI](https://huggingface.co/facebook/bart-large-mnli)
+- Problem Formulation:
+    - The case of having a binary classification problem is a special case of the general classification problem.
+    - This assumes that we have aleast 2 classes even in the binary case this way it we can generalize the problem to a multi-class classification problem where N >= 2.
 
-- **Dataset**: We could have used a larger sample size for our testing but i did this to keep it simple and shuffled the data and randomly sampled 100 rows. Now if our possible custom labels are a large number we would need to sample more data relative to the number of labels we have.
+- **Model Choice**: 
 
-- **Testing**: I didn't include tests with the few shot examples because I wanted to get this PR in, now wew could have sampled some of the data from the dataset and used them as few shot examples if we had an example dataset, specifically sampling atleast M examples for each label.
+    - We could have used a SLM which does dynamic classification, that is trained.  This could be useful if we wanted to save money on the LLM calls. but the caveat would not be able to add context to our input which is needed to understand the variables if some of the variables are not text based and numbers. 
+    - An example of this would be available here on hugging face i.e. [Facebooks BART-Large-MNLI](https://huggingface.co/facebook/bart-large-mnli)
+
+- **Dataset**: 
+    - We could have used a larger sample size for our testing but i did this to keep it simple and shuffled the data and randomly sampled 100 rows. Now if our possible custom labels are a large number we would need to sample more data relative to the number of labels we have.
+
+- **Testing**: 
+    - I didn't include tests with the few shot examples because I wanted to get this PR in, now wew could have sampled some of the data from the dataset and used them as few shot examples if we had an example dataset, specifically sampling atleast M examples for each label.
+    - We use simply accuracy where as we could have used other metrics like F1 score, precision, recall, etc. and output a confusion matrix to accompany the tests.
+
+- **Future Optimization**: 
+    - We aren't dynamically generating the Basemodel Resposne for each dataset we could choose to dynamically generate a BaseModel based on the `custom_labels` which are passed in this way we can have a stronger type check enforced by the llms `.parse()` method as it is possible for it to NOT return an expected output. 
+    - We could do a type of feature optimization where we find the most important features for the classification task using a method like PCA this way we can ensure the number of features we us to handle the classification task is minimized.
