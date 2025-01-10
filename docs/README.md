@@ -23,6 +23,7 @@ To classify input data, send a POST request to the `/classify` endpoint with the
 
 - Docker
 - Docker Compose
+- .env file with OPENAI_API_KEY
 
 ### Running the Application
 
@@ -149,3 +150,6 @@ PS: you can select a specific dataset by uncommenting the dataset you want to te
     - _Unit Tests_: We could have added unit tests to the project to ensure the code is working as expected.
 
 
+    - can do batch classification instead of single classification this will allow for more requests per second, but is dependent on rate limits of LLM.
+
+    - Consider openosurce model like Llamba 3.2 440B or Llama 3.2 70B

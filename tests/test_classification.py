@@ -159,6 +159,6 @@ def test_nslkdd_classification_error():
     assert error < 0.5, f"Classification Error for {dataset_name} is too high: {error}"
 
 if __name__ == "__main__":
-    # test_iris_classification_error()
-    test_nslkdd_classification_error()
+    test_iris_classification_error()
+    # test_nslkdd_classification_error()
     # test_imdb_classification_error()
