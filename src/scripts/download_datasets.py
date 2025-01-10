@@ -38,8 +38,7 @@ def download_dataset_as_csv(name):
 def main():
     os.makedirs(DATASETS_DIR, exist_ok=True)
     # List of dataset names to download
-    # dataset_names = ["scikit-learn/iris", "scikit-learn/imdb", "Mireu-Lab/NSL-KDD"]
-    dataset_names = ["Mireu-Lab/NSL-KDD"]
+    dataset_names = ["scikit-learn/iris", "scikit-learn/imdb", "Mireu-Lab/NSL-KDD"]
     for name in dataset_names:
         download_dataset_as_csv(name)
 
