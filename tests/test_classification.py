@@ -160,5 +160,5 @@ def test_nslkdd_classification_error():
 
 if __name__ == "__main__":
     # test_iris_classification_error()
-    # test_nslkdd_classification_error()
-    test_imdb_classification_error()
+    test_nslkdd_classification_error()
+    # test_imdb_classification_error()
