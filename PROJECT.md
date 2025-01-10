@@ -42,7 +42,7 @@ class ClassificationRequest(BaseModel):
         description="Optional list of custom labels to classify."
     )
 
-class ClassificationResponse(BaseModel):
+class ClassificationLLMResponse(BaseModel):
     predictions: List[LabelPrediction] = Field(..., description="List of label predictions from the model")
 
 config.py
@@ -133,12 +133,12 @@ main.py
 
 from fastapi import FastAPI
 from typing import List
-from .schemas import ClassificationRequest, ClassificationResponse, LabelPrediction
+from .schemas import ClassificationRequest, ClassificationLLMResponse, LabelPrediction
 from .classification_service import classify_input
 
 app = FastAPI(title="LLM Classification API", version="1.0.0")
 
-@app.post("/classify", response_model=ClassificationResponse)
+@app.post("/classify", response_model=ClassificationLLMResponse)
 def classify(request: ClassificationRequest):
     """
     Primary endpoint to run classification using an LLM.
@@ -155,7 +155,7 @@ def classify(request: ClassificationRequest):
     # Convert the dictionary predictions to LabelPrediction Pydantic models
     predictions = [LabelPrediction(**p) for p in predictions_dict]
 
-    return ClassificationResponse(predictions=predictions)
+    return ClassificationLLMResponse(predictions=predictions)
 
 Testing with Three Common Datasets
 

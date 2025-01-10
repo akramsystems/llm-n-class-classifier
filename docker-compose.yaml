@@ -1,11 +1,10 @@
-version: '3.8'
-
 services:
   general-classification-api:
     build: .
     ports:
-      - "8000:80"
+      - "8000:8000"
     volumes:
-      - .:/app
+      - .:/src
+      - ./datasets:/datasets
     environment:
       - PYTHONUNBUFFERED=1

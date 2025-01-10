@@ -17,5 +17,8 @@ class ClassificationRequest(BaseModel):
     few_shot_examples: Optional[List[Dict]] = Field(None, description="Optional few-shot examples to be appended to the system prompt.")
     input_schema_definition: Optional[str] = Field(None, description="Optional input schema definition to be appended to the system prompt.")
 
-class ClassificationResponse(BaseModel):
+class ClassificationLLMResponse(BaseModel):
     predictions: List[LabelPrediction] = Field(..., description="List of label predictions from the model")
+
+class ClassificationResponse(BaseModel):
+    model_response: str = Field(..., description="Raw response from the model")

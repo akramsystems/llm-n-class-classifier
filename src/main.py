@@ -13,7 +13,7 @@ def classify(request: ClassificationRequest):
     - Accepts a dataset name, input data, optional few-shot examples, and custom labels.
     - Returns a structured JSON with label predictions.
     """
-    predictions_dict = classify_input(
+    prediction = classify_input(
         dataset_name=request.dataset_name,
         input_data=request.input_data,
         custom_labels=request.custom_labels,
@@ -21,9 +21,6 @@ def classify(request: ClassificationRequest):
         input_schema_definition=request.input_schema_definition
     )
 
-    logger.info(f"Predicted label: {predictions_dict}")
+    logger.info(f"Predicted label: {prediction}")
 
-    # Convert the dictionary predictions to LabelPrediction Pydantic models
-    predictions = [LabelPrediction(**p) for p in predictions_dict]
-
-    return ClassificationResponse(predictions=predictions) 
+    return ClassificationResponse(model_response=prediction) 

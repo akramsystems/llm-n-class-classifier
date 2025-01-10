@@ -1,17 +1,23 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.11-slim
 
-# Set the working directory in the container
-WORKDIR /app
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Set the maintainer label
+LABEL maintainer="Ali Akram <akramsystems@gmail.com>"
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy and install dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+# Copy the application code
+COPY ./src /src
+WORKDIR /src
 
-# Run the application
-CMD ["python", "src/main.py"]
+# Set the Python path
+ENV PYTHONPATH=/src
+
+# Run the start script
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

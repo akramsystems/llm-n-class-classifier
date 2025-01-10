@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from src.config import OPENAI_API_KEY
 from src.logger_config import logger  # Import the logger
-from src.schemas import CustomLabel, ClassificationResponse, LabelPrediction
+from src.schemas import CustomLabel, ClassificationLLMResponse, LabelPrediction
 
 DEFAULT_MODEL = "gpt-4o"
 
@@ -61,7 +61,7 @@ class ClassificationLLM:
 
         return user_prompt.strip()
 
-    def call_llm_for_classification(self, user_prompt: str, input_data: str) -> ClassificationResponse:
+    def call_llm_for_classification(self, user_prompt: str, input_data: str) -> ClassificationLLMResponse:
         """
         Calls the LLM for classification and returns structured output.
         """
@@ -72,7 +72,7 @@ class ClassificationLLM:
                 {"role": "system", "content": self.SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt + "\n" + input_data},
             ],
-            response_format=ClassificationResponse,
+            response_format=ClassificationLLMResponse,
         )
 
         # Extract and return the parsed response for the first choice

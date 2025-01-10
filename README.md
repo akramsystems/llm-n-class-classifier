@@ -67,6 +67,16 @@ To classify input data, send a POST request to the `/classify` endpoint with the
 3. **Access the API**:
    The API will be available at `http://localhost:8000`.
 
+### Example Request and Response
+
+To classify input data, send a POST request to the `/classify` endpoint. Below is an example of how to structure your request and the expected response.
+
+#### Request Example
+![Example Request](docs/example-request.png)
+
+#### Response Example
+![Example Response](docs/example-response.png)
+
 ### Executing a Python Function within the Docker Container
 
 To execute a Python function within the Docker container, follow these steps:
@@ -84,9 +94,34 @@ To execute a Python function within the Docker container, follow these steps:
    python src/scripts/download_datasets.py
    ```
 
+
+## Running Tests and Scripts with Docker Compose
+
+### Make sure image is running and get container id
+
+```bash
+$ docker-compose up
+$ docker ps
+```
+
+for example, container id is `308152ef22c2`
+
+### Download the Datasets First (if not already downloaded)
+
+```bash
+$ docker exec -it 308152ef22c2 python -m scripts.download_datasets
+```
+
+### Running Tests
+
+```bash
+$ docker exec -it 308152ef22c2 python -m tests.test_classification
+```
+
 ## Additional Notes
 
-- **Authentication**: Secure your endpoints in production.
-- **LLM Integration**: Replace mock functions with real LLM API calls.
-- **Scalability**: Consider using background tasks or caching for high request volumes.
-- **Documentation**: Provide thorough documentation and describe design decisions, tradeoffs, dataset details, and challenges. 
+- **Model Choice**: We could have used a SLM which does dynamic classification, that is trained.  This could be useful if we wanted to save money on the LLM calls. but the caveat would not be able to add context to our input which is needed to understand the variables if some of the variables are not text based and numbers. An example of this would be available here on hugging face i.e. [Facebooks BART-Large-MNLI](https://huggingface.co/facebook/bart-large-mnli)
+
+- **Dataset**: We could have used a larger sample size for our testing but i did this to keep it simple and shuffled the data and randomly sampled 100 rows. Now if our possible custom labels are a large number we would need to sample more data relative to the number of labels we have.
+
+- **Testing**: I didn't include tests with the few shot examples because I wanted to get this PR in, now wew could have sampled some of the data from the dataset and used them as few shot examples if we had an example dataset, specifically sampling atleast M examples for each label.

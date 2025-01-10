@@ -22,6 +22,7 @@ def classify_input(
     classification_response = llm_classifier.call_llm_for_classification(user_prompt, input_data)
 
     # Find and return the labeled class (note there is a better way to do this in the future)
+    logger.info(f"Classification response: {classification_response}")
     for prediction in classification_response:
         if prediction.value:
             return prediction.label_name
